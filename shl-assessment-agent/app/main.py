@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
 
 from app.api.exceptions import logging_middleware, register_exception_handlers
 from app.api.routes import router
@@ -17,4 +18,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application.middleware("http")(logging_middleware)
     register_exception_handlers(application)
     application.include_router(router, prefix=resolved_settings.api_prefix)
+    
+    @application.get("/", include_in_schema=False)
+    def root():
+        return RedirectResponse(url="/docs")
+
     return application
