@@ -9,10 +9,9 @@ class ConversationMessage(BaseModel):
 
 class ChatRequest(BaseModel):
 
-    message: str = Field(description="User message.")
-    conversation: list[ConversationMessage] = Field(
-        default_factory=list,
-        description="Prior conversation messages.",
+    messages: list[ConversationMessage] = Field(
+        description="Full conversation history ending with the latest user message.",
+        min_length=1,
     )
 
 

@@ -38,13 +38,14 @@ async def chat(
     response_generator: ResponseGenerator = Depends(get_response_generator),
 ) -> ChatResponse:
 
+    latest_user_message = request.messages[-1].content
     conversation_history: list[ConversationMessage] = [
-        _api_turn_to_domain(turn) for turn in request.conversation
+        _api_turn_to_domain(turn) for turn in request.messages[:-1]
     ]
 
     pipeline_result = orchestrator.run(
         conversation_history=conversation_history,
-        latest_user_message=request.message,
+        latest_user_message=latest_user_message,
     )
 
     generated_reply = response_generator.generate(

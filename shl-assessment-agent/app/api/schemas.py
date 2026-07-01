@@ -13,16 +13,9 @@ class ConversationTurn(BaseModel):
 
 class ChatRequest(BaseModel):
 
-    message: str = Field(
-        description="Latest user message to process.",
+    messages: list[ConversationTurn] = Field(
+        description="Full conversation history ending with the latest user message.",
         min_length=1,
-    )
-    conversation: list[ConversationTurn] = Field(
-        default_factory=list,
-        description=(
-            "Prior conversation turns in chronological order. "
-            "Omit or send [] for the first turn."
-        ),
     )
 
 

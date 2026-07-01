@@ -32,10 +32,9 @@ def empty_catalog_client() -> TestClient:
 
 
 def _chat(message: str, conversation: list[dict] | None = None) -> dict:
-    body: dict = {"message": message}
-    if conversation:
-        body["conversation"] = conversation
-    return body
+    messages = list(conversation) if conversation else []
+    messages.append({"role": "user", "content": message})
+    return {"messages": messages}
 
 
 class TestHealthEndpoint:
@@ -108,31 +107,27 @@ class TestChatResponseContract:
 
 class TestChatRequestValidation:
 
-    def test_missing_message_returns_422(self, client: TestClient) -> None:
+    def test_missing_messages_returns_422(self, client: TestClient) -> None:
         response = client.post("/chat", json={})
         assert response.status_code == 422
 
-    def test_empty_message_returns_422(self, client: TestClient) -> None:
-        response = client.post("/chat", json={"message": ""})
+    def test_empty_messages_returns_422(self, client: TestClient) -> None:
+        response = client.post("/chat", json={"messages": []})
         assert response.status_code == 422
 
     def test_missing_body_returns_422(self, client: TestClient) -> None:
         response = client.post("/chat")
         assert response.status_code == 422
 
-    def test_conversation_defaults_to_empty_list(self, client: TestClient) -> None:
-        response = client.post("/chat", json={"message": "I need help."})
-        assert response.status_code == 200
-
-    def test_conversation_with_valid_turns_accepted(self, client: TestClient) -> None:
+    def test_messages_with_valid_turns_accepted(self, client: TestClient) -> None:
         response = client.post(
             "/chat",
             json={
-                "message": "Graduate level please.",
-                "conversation": [
+                "messages": [
                     {"role": "user", "content": "I need to hire software engineers."},
                     {"role": "assistant", "content": "What level?"},
-                ],
+                    {"role": "user", "content": "Graduate level please."},
+                ]
             },
         )
         assert response.status_code == 200
