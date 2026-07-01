@@ -1,0 +1,24 @@
+[tool.black]
+line-length = 88
+target-version = ["py312"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "D"]
+ignore = ["D100"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+plugins = []
+disallow_untyped_decorators = false
+
+[tool.pytest.ini_options]
+# Use a local temp directory to avoid Windows AppData permission errors.
+tmp_path_retention_policy = "failed"
